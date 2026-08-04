@@ -2,16 +2,15 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)                     // ✅ Add KSP plugin
+    // No KSP needed here unless you use Room
 }
 
 android {
-    namespace = "com.modify.music"               // Your actual namespace
+    namespace = "moe.rukamori.archivetune.innertube"
     compileSdk = 35
 
     defaultConfig {
         minSdk = 24
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -34,17 +33,18 @@ android {
 }
 
 dependencies {
-    // Room (Runtime + KTX + Compiler with KSP)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)             // ✅ Essential – enables code generation
-
-    // Hilt (if you use it in this module)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)              // If you use Hilt in this module
-
-    // Other dependencies you already have
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    // ... rest
+    implementation(libs.okhttp.dnsoverhttps)   // consider replacing if issues
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.client.encoding)
+    implementation(libs.brotli)
+    implementation(libs.newpipe.extractor)
+    implementation(libs.re2j)
+    implementation(libs.rhino)
+    implementation(libs.kotlinx.coroutines.core)
+
+    // ✅ ADD THIS
+    implementation(libs.kotlinx.serialization.json)
 }
