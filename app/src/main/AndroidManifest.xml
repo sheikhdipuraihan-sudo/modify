@@ -46,7 +46,7 @@
 
         <!-- Main Activity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Modify"
             android:windowSoftInputMode="adjustResize"
@@ -60,7 +60,7 @@
 
         <!-- Music Service -->
         <service
-            android:name=".service.MusicService"
+            android:name=".service.ModifyMusicService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>

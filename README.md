@@ -85,27 +85,19 @@ Modify follows clean architecture principles:
 ## Project Structure
 
 ```
-modify-app/
-├── app/
+.
+├── app/                      # Android Application module
 │   └── src/main/kotlin/com/modify/music/
-│       ├── data/
-│       │   ├── dao/          # Data Access Objects
-│       │   ├── database/     # Room Database
-│       │   ├── model/        # Data models
-│       │   ├── remote/       # API clients
-│       │   └── repository/   # Repositories
-│       ├── di/               # Dependency Injection
-│       ├── service/          # Background services
-│       ├── ui/
-│       │   ├── components/   # Reusable UI components
-│       │   ├── navigation/   # Navigation setup
-│       │   ├── screens/      # App screens
-│       │   └── theme/        # Theme configuration
-│       ├── viewmodel/        # ViewModels
+│       ├── data/             # Data layer (Room, Repositories)
+│       ├── di/               # Dependency Injection (Hilt)
+│       ├── service/          # Background services (Music playback)
+│       ├── ui/               # UI layer (Compose, Screens, ViewModels)
 │       └── ModifyApplication.kt
-├── core/                     # Core module (backend foundation)
+├── core/                     # Core module (InnerTube API engine)
+├── gradle/                   # Gradle wrapper and version catalog
 ├── .github/workflows/        # CI/CD workflows
-└── build.gradle.kts          # Build configuration
+├── build.gradle.kts          # Root build configuration
+└── settings.gradle.kts       # Project settings
 ```
 
 ## Requirements
@@ -120,7 +112,7 @@ modify-app/
 1. Clone the repository:
 ```bash
 git clone https://github.com/sheikhdipuraihan-sudo/modify.git
-cd modify/modify-app
+cd modify
 ```
 
 2. Open in Android Studio
