@@ -92,7 +92,7 @@ coil-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", v
 
 # Other libraries
 brotli = { group = "org.brotli", name = "dec", version.ref = "brotli" }
-newpipe-extractor = { group = "com.github.ArchiveTuneOrg.NewPipeExtractor", name = "extractor", version.ref = "newpipeExtractor" }
+newpipe-extractor = { group = "com.github.TeamNewPipe", name = "NewPipeExtractor", version.ref = "newpipeExtractor" }
 re2j = { group = "com.google.re2j", name = "re2j", version.ref = "re2j" }
 rhino = { group = "org.mozilla", name = "rhino", version.ref = "rhino" }
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
