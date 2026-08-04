@@ -77,6 +77,9 @@ android {
 dependencies {
     implementation(project(":core"))
 
+    // Splash Screen ✅ ADD THIS
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
