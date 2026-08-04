@@ -1,162 +1,207 @@
-<div align="center">
+# Modify - Modern Music Streaming App
 
-  <h1>ArchiveTune Core</h1>
+![Android](https://img.shields.io/badge/Android-7.0+-green.svg)
+![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple.svg)
+![Compose](https://img.shields.io/badge/Jetpack%20Compose-latest-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-  <p align="center">
-    <strong>InnerTube API client for YouTube Music.</strong>
-    <br />
-    <em>The core library powering <a href="https://github.com/rukamori/ArchiveTune">ArchiveTune</a> — a high-performance, privacy-focused YouTube Music client for Android.</em>
-  </p>
-
-  <p align="center">
-    <img src="https://img.shields.io/github/v/release/rukamori/core?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="Latest Version" />
-    <img src="https://img.shields.io/github/license/rukamori/core?style=for-the-badge&color=6366f1&labelColor=1e1e2e" alt="License" />
-    <img src="https://img.shields.io/badge/Language-Kotlin-7f52ff?style=for-the-badge&logo=kotlin&color=6366f1&labelColor=1e1e2e" alt="Kotlin" />
-    <img src="https://img.shields.io/badge/Runtime-JVM-6366f1?style=for-the-badge&logo=openjdk&labelColor=1e1e2e" alt="JVM" />
-    <img src="https://img.shields.io/github/stars/rukamori/core?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="Stars" />
-  </p>
-
-  <a href="https://star-history.com/#rukamori/core&rukamori/ArchiveTune&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rukamori/core,rukamori/ArchiveTune&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=rukamori/core,rukamori/ArchiveTune&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=rukamori/core,rukamori/ArchiveTune&type=Date" width="600" />
-    </picture>
-  </a>
-
-</div>
-
-## Overview
-
-This is the standalone InnerTube API core extracted from [ArchiveTune](https://github.com/rukamori/ArchiveTune). It provides a complete Ktor-based HTTP client for interacting with YouTube Music's InnerTube API, including request signing, response parsing, proxy rotation, and playback authentication.
+**Modify** is a modern, feature-rich Android music streaming application built with Kotlin and Jetpack Compose. It provides a premium user experience with Material Design 3, smooth animations, and powerful music playback capabilities.
 
 ## Features
 
-- **Full API Coverage** — search, browse, library, playlist management, playback, and account interactions
-- **Ktor Client** — built on Ktor with OkHttp engine, content negotiation, brotli encoding, and DNS-over-HTTPS
-- **Response Parsing** — complete set of Kotlinx Serialization models for InnerTube responses
-- **Page Parsers** — domain-level parsers that transform raw JSON into typed page objects
-- **Proxy Rotation** — built-in rotating proxy selector with cooldown tracking for failed proxies
-- **Playback Auth** — PO token management for authenticated playback
-- **NewPipe Integration** — optional cipher deobfuscation and stream URL extraction via NewPipe Extractor
+### 🎵 Music Playback
+- Full-featured music player with play, pause, skip controls
+- Background playback support
+- Lock screen controls
+- MediaSession integration
+- Queue management
+- Shuffle and repeat modes
+- Seek functionality
+
+### 🏠 Home Screen
+- Personalized recommendations
+- Recently played songs
+- Trending music
+- New releases
+- Featured playlists
+
+### 🔍 Search
+- Search songs, albums, and artists
+- Search history
+- Instant suggestions
+- Voice search support (optional)
+
+### 📚 Library
+- Your playlists
+- Liked songs
+- Albums collection
+- Artists library
+- Downloaded music
+- Play history
+
+### ⬇️ Downloads
+- Offline playback support
+- Multiple quality options
+- Download management
+- Storage optimization
+
+### ⚙️ Settings
+- Dark/Light theme toggle
+- Dynamic colors (Android 12+)
+- Audio quality settings
+- Cache management
+- Storage management
 
 ## Architecture
 
-The diagram below shows how this library fits into the ArchiveTune app and how data flows through the layers.
-
-```mermaid
-flowchart TB
-    subgraph Android["ArchiveTune App (Android)"]
-        UI["Jetpack Compose UI<br/>Screens & Components"]
-        VM["ViewModels<br/>State holders"]
-        SVC["Services<br/>MusicService, Player"]
-        DB["Room Database<br/>Local cache"]
-    end
-
-    subgraph Core["core (this library)"]
-        YT["YouTube.kt<br/>High-level API singleton"]
-        IT["InnerTube.kt<br/>Ktor HTTP client"]
-        MB["MusicBackend.kt<br/>API contract"]
-
-        subgraph Models["Models"]
-            REQ["Request bodies<br/>(SearchBody, PlayerBody, ...)"]
-            RES["Response models<br/>(PlayerResponse, BrowseResponse, ...)"]
-        end
-
-        subgraph Pages["Pages"]
-            PARSERS["Page parsers<br/>(AlbumPage, ArtistPage, SearchPage, ...)"]
-        end
-
-        subgraph Proxy["Proxy"]
-            RPS["RotatingProxySelector<br/>IP rotation with cooldown"]
-            RPC["RotatingProxyClient<br/>Proxy list fetcher"]
-        end
-
-        AUTH["PlaybackAuthState<br/>PO token & cookie management"]
-        UTILS["Utils"]
-    end
-
-    subgraph External["External"]
-        YTM["YouTube Music<br/>InnerTube API"]
-        NEWPIPE["NewPipe Extractor<br/>Cipher / stream URL"]
-        BANDCAMP["Bandcamp / SoundCloud<br/>(via NewPipe)"]
-    end
-
-    UI --> VM --> SVC
-    SVC --> YT
-    YT --> IT
-    YT --> MB
-    MB --> IT
-    IT --> Models
-    IT --> Pages
-    IT --> AUTH
-    IT --> Proxy
-    IT --> UTILS
-    IT -->|HTTP / Ktor| YTM
-    IT -->|Stream decryption| NEWPIPE
-    NEWPIPE --> BANDCAMP
-    VM --> DB
-```
-
-**Data flow:**
-1. User interacts with ArchiveTune's Compose UI
-2. ViewModels & Services call `YouTube.*` methods
-3. `YouTube` delegates to `InnerTube` via the `MusicBackend` interface
-4. `InnerTube` builds signed requests, sends them via Ktor to YouTube Music's InnerTube API
-5. Raw JSON responses are deserialized into typed response models
-6. Page parsers transform structured responses into domain page objects
-7. For playback, stream URLs are decrypted via NewPipe Extractor (optional)
-
-## Package Structure
+Modify follows clean architecture principles:
 
 ```
-moe.rukamori.archivetune.innertube/
-├── InnerTube.kt              — Core HTTP client
-├── YouTube.kt                — High-level API singleton (main entry point)
-├── MusicBackend.kt           — API contract interface
-├── PlaybackAuthState.kt      — Authentication state model
-├── SearchFilter.kt           — Search filter parameter helpers
-├── LibraryFilter.kt          — Library filter parameter helpers
-├── models/                   — Response data models (JSON deserialization targets)
-│   ├── body/                 — Request body models
-│   └── response/             — Response wrapper models
-├── pages/                    — Page parsers (response-to-domain transformation)
-├── proxy/                    — Proxy rotation and configuration
-└── utils/                    — Shared utilities
+┌─────────────────────────────────────┐
+│           UI Layer                  │
+│  (Composables, ViewModels, State)   │
+├─────────────────────────────────────┤
+│         Domain Layer                │
+│      (Use Cases, Models)            │
+├─────────────────────────────────────┤
+│          Data Layer                 │
+│  (Repositories, DAOs, API, Cache)   │
+└─────────────────────────────────────┘
 ```
 
-## Dependencies
+### Tech Stack
 
-- **Ktor Client** 3.5.0 — HTTP client core, OkHttp engine, content negotiation, brotli encoding, JSON serialization
-- **OkHttp** 5.3.2 — DNS-over-HTTPS support
-- **Kotlinx Serialization** — JSON deserialization
-- **NewPipe Extractor** 0.26.2 — stream URL extraction, cipher deobfuscation, Bandcamp/SoundCloud search
-- **re2j** 1.8 — Google RE2 regular expressions
-- **Rhino** 1.9.1 — JavaScript engine (cipher operations)
+- **Language**: Kotlin
+- **UI**: Jetpack Compose, Material Design 3
+- **Architecture**: MVVM + Repository Pattern
+- **DI**: Hilt
+- **Async**: Coroutines + Flow/StateFlow
+- **Local DB**: Room
+- **Preferences**: DataStore
+- **Media Player**: Media3 (ExoPlayer)
+- **Image Loading**: Coil
+- **Navigation**: Navigation Compose
 
-## Usage
+## Project Structure
 
-```kotlin
-// Search
-val results = YouTube.search("query", SearchFilter.SONGS)
-
-// Browse
-val home = YouTube.home()
-val album = YouTube.album("browse_id")
-val artist = YouTube.artist("browse_id")
-val playlist = YouTube.playlist("playlist_id")
-
-// Player
-val player = YouTube.player("video_id", "playlist_id", YouTubeClient.WEB)
-
-// Playlist management
-YouTube.createPlaylist("My Playlist", "description")
-YouTube.addToPlaylist("playlist_id", listOf("video_id"))
-
-// Auth
-YouTube.authState = PlaybackAuthState(cookie = "...", visitorData = "...")
 ```
+modify-app/
+├── app/
+│   └── src/main/kotlin/com/modify/music/
+│       ├── data/
+│       │   ├── dao/          # Data Access Objects
+│       │   ├── database/     # Room Database
+│       │   ├── model/        # Data models
+│       │   ├── remote/       # API clients
+│       │   └── repository/   # Repositories
+│       ├── di/               # Dependency Injection
+│       ├── service/          # Background services
+│       ├── ui/
+│       │   ├── components/   # Reusable UI components
+│       │   ├── navigation/   # Navigation setup
+│       │   ├── screens/      # App screens
+│       │   └── theme/        # Theme configuration
+│       ├── viewmodel/        # ViewModels
+│       └── ModifyApplication.kt
+├── core/                     # Core module (backend foundation)
+├── .github/workflows/        # CI/CD workflows
+└── build.gradle.kts          # Build configuration
+```
+
+## Requirements
+
+- Android Studio Hedgehog or later
+- JDK 17
+- Android SDK 35
+- Minimum Android version: 7.0 (API 24)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/sheikhdipuraihan-sudo/modify.git
+cd modify/modify-app
+```
+
+2. Open in Android Studio
+
+3. Sync Gradle files
+
+4. Run on device or emulator:
+```bash
+./gradlew installDebug
+```
+
+## Building
+
+### Debug Build
+```bash
+./gradlew assembleDebug
+```
+
+### Release Build
+```bash
+./gradlew assembleRelease
+```
+
+### Android App Bundle
+```bash
+./gradlew bundleRelease
+```
+
+## Configuration
+
+### Audio Quality Options
+- Low: ~64 kbps
+- Medium: ~128 kbps
+- High: ~256 kbps
+- Very High: ~320 kbps
+
+### Supported Formats
+- MP3
+- AAC
+- FLAC (if supported by core)
+- OGG
+
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Code Style
+
+This project follows the [Kotlin coding conventions](https://kotlinlang.org/docs/coding-conventions.html).
 
 ## License
 
-[GNU General Public License v3.0](LICENSE)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built upon the core engine from [modify](https://github.com/sheikhdipuraihan-sudo/modify)
+- Inspired by modern music streaming applications
+- Thanks to all open-source contributors
+
+## Screenshots
+
+_Screenshots will be added soon_
+
+## Roadmap
+
+- [ ] Android Auto support
+- [ ] Wear OS companion app
+- [ ] Lyrics display
+- [ ] Equalizer integration
+- [ ] Crossfade playback
+- [ ] Gapless playback
+- [ ] Chromecast support
+- [ ] Social sharing features
+
+---
+
+Made with ❤️ using Kotlin and Jetpack Compose

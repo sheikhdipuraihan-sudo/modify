@@ -1,23 +1,9 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.jvm)
-}
-
-kotlin {
-    jvmToolchain(21)
-}
-
-dependencies {
-    implementation(project(":morideobfuscator"))
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.okhttp.dnsoverhttps)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.json)
-    implementation(libs.ktor.client.encoding)
-    implementation(libs.brotli)
-    implementation(libs.newpipe.extractor)
-    implementation(libs.re2j)
-    implementation(libs.rhino)
-    testImplementation(libs.junit)
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.ksp) apply false
 }
